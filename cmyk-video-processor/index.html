@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMYK Video Processor</title>
+    <link rel="stylesheet" href="src/styles.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-video"></i> CMYK Video Processor</h1>
+            <p class="subtitle">Process videos with CMYK and YCCK color spaces</p>
+        </header>
+
+        <main>
+            <div class="upload-section" id="dropZone">
+                <label for="videoInput" class="file-input-label">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>Choose a video file or drag and drop here</span>
+                    <input type="file" id="videoInput" accept="video/*" class="file-input">
+                </label>
+            </div>
+
+            <div class="video-preview">
+                <video id="videoPlayer" controls playsinline>
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+
+            <div class="channel-selection">
+                <h3>Select Channel to Extract:</h3>
+                <div class="channel-buttons">
+                    <button id="channelC" class="channel-button" disabled>
+                        <i class="fas fa-adjust"></i> Cyan Channel
+                    </button>
+                    <button id="channelM" class="channel-button" disabled>
+                        <i class="fas fa-adjust"></i> Magenta Channel
+                    </button>
+                    <button id="channelY" class="channel-button" disabled>
+                        <i class="fas fa-adjust"></i> Yellow Channel
+                    </button>
+                </div>
+            </div>
+
+            <div class="processed-video-preview">
+                <video id="processedVideo" controls playsinline>
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+
+            <div class="status-section">
+                <div id="statusMessage" class="status-message"></div>
+                <div class="progress-container">
+                    <div id="progressBar" class="progress-bar"></div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Video Processing Demo</p>
+        </footer>
+    </div>
+
+    <!-- Debug information -->
+    <div id="debug" style="display: none;">
+        <pre id="debugLog"></pre>
+    </div>
+
+    <script>
+        // Enable debug logging
+        const debugLog = document.getElementById('debugLog');
+        const originalConsoleLog = console.log;
+        const originalConsoleError = console.error;
+
+        console.log = function() {
+            debugLog.textContent += Array.from(arguments).join(' ') + '\n';
+            originalConsoleLog.apply(console, arguments);
+        };
+
+        console.error = function() {
+            debugLog.textContent += 'ERROR: ' + Array.from(arguments).join(' ') + '\n';
+            originalConsoleError.apply(console, arguments);
+        };
+
+        // Show debug panel in development
+        if (window.location.hostname === 'localhost') {
+            document.getElementById('debug').style.display = 'block';
+        }
+    </script>
+
+    <!-- FFmpeg WASM -->
+    <script src="lib/ffmpeg-core.js"></script>
+    <script src="lib/ffmpeg.min.js"></script>
+    
+    <!-- Application code -->
+    <script src="src/app.js" defer></script>
+</body>
+</html>
