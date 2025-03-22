@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Video Generator</title>
+</head>
+<body>
+    <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+    <video id="video" controls></video>
+    <script>
+        // Create a simple animation on canvas
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const video = document.getElementById('video');
+        const stream = canvas.captureStream(30); // 30 FPS
+        const mediaRecorder = new MediaRecorder(stream, {
+            mimeType: 'video/webm;codecs=vp8',
+            videoBitsPerSecond: 1000000
+        });
+        const chunks = [];
+
+        // Draw animation
+        let frame = 0;
+        function draw() {
+            ctx.fillStyle = `hsl(${frame % 360}, 100%, 50%)`;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'white';
+            ctx.font = '30px Arial';
+            ctx.fillText('Test Video', 100, 120);
+            frame++;
+            if (frame < 150) { // 5 seconds at 30 FPS
+                requestAnimationFrame(draw);
+            } else {
+                mediaRecorder.stop();
+            }
+        }
+
+        // Handle recording
+        mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+        mediaRecorder.onstop = () => {
+            const blob = new Blob(chunks, { type: 'video/webm' });
+            video.src = URL.createObjectURL(blob);
+            // Create download link
+            const a = document.createElement('a');
+            a.href = video.src;
+            a.download = 'test-video.webm';
+            a.textContent = 'Download test video';
+            document.body.appendChild(a);
+        };
+
+        // Start recording
+        mediaRecorder.start();
+        draw();
+    </script>
+</body>
+</html>
